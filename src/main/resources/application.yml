@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hardslight
+    username: postgres
+    password: hunove12
+  flyway:
+    schemas:
+      - hards
+debug: false
+
+
