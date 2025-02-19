@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(origins = "https://localhost:5173")
+@CrossOrigin(origins = "https://bandanaclawa.ru:5173")
 public class RestControllerSaveCred {
     @Autowired
     private CredentialsRepository credentialsRepository;
@@ -20,7 +20,7 @@ public class RestControllerSaveCred {
     @PostMapping(value = "/savecred")
     public boolean RestControllerTest(@RequestBody CredentialsReq credentialsReq) {
         Credentials credentials = new Credentials(
-                1L,
+                Long.valueOf(credentialsReq.getUserid()),
                 credentialsReq.getUsername(),
                 credentialsReq.getSystem(),
                 credentialsReq.getLogin(),

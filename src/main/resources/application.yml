@@ -1,11 +1,18 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/hardslight
+    url: jdbc:postgresql://bandanaclawa.ru:5432/hardslight
     username: postgres
     password: hunove12
-  flyway:
-    schemas:
-      - hards
-debug: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: classpath:key.pem
+debug: true
+server:
+  ssl:
+    key-store: classpath:keystore.jks
+    key-store-password: hunove12
+  port: 8443
 
 

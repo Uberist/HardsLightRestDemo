@@ -2,23 +2,22 @@ package org.bandana.resthardslightdemo.db.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DialectOverride;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(schema = "hards", name = "credentials_group")
 @Entity
-public class GroupsCred {
+@Table(schema = "hards", name = "cred_group")
+public class CredGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private long id;
-    @Column(name = "name_group")
-    private String name_group;
-
-    public GroupsCred(String groupName) {
-        this.name_group = groupName;
-    }
+    Long id;
+    @Column(name = "id_cred")
+    Long id_cred;
+    @Column(name = "id_group")
+    Long id_group;
 }
