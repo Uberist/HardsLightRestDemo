@@ -2,14 +2,11 @@ package org.bandana.resthardslightdemo.controllers;
 
 import jakarta.transaction.Transactional;
 import org.bandana.resthardslightdemo.db.entity.CredGroup;
-import org.bandana.resthardslightdemo.db.repository.GroupCredRepositoryToMany;
+import org.bandana.resthardslightdemo.db.repository.*;
 import org.bandana.resthardslightdemo.db.repository.GroupCredRepositoryToMany;
 import org.bandana.resthardslightdemo.request.*;
 import org.bandana.resthardslightdemo.db.entity.Credentials;
 import org.bandana.resthardslightdemo.db.entity.GroupsCred;
-import org.bandana.resthardslightdemo.db.repository.CredentialsRepository;
-import org.bandana.resthardslightdemo.db.repository.GroupsCredRepository;
-import org.bandana.resthardslightdemo.db.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -32,19 +29,41 @@ public class RestControllerCred {
     private UsersRepository usersRepository;
     @Autowired
     private GroupsCredRepository groupsCredRepository;
+    @Autowired
+    private CredSystemRepository credSystemRepository;
+    @Autowired
+    SystemRepository systemRepository;
     @PostMapping(value = "/getcred")
-    public ResponseEntity<Iterable<Credentials>> RestControllerTest(@RequestBody UserIdReq req) {
+    public ResponseEntity<Iterable<CredentialsReq>> RestControllerTest(@RequestBody UserIdReq req) {
         Iterable<Credentials> credentials = credentialsRepository.findByUserId(Long.valueOf(req.getUserid()));
-        return ResponseEntity.ok(credentials);
+        List<CredentialsReq> creds = new ArrayList<>();
+        for(Credentials cred : credentials)
+            creds.add(new CredentialsReq(
+                    cred.getId(),
+                    cred.getUsername(),
+                    systemRepository.findAllById(credSystemRepository.findByCredId(cred.getId())),
+                    cred.getLogin(),
+                    cred.getPassword(),
+                    String.valueOf(cred.getId())));
+        return ResponseEntity.ok(creds);
     }
 
     @PostMapping(value = "/deletecred")
     public ResponseEntity<Boolean> RestControllerDelete(@RequestBody DeleteCredReq deleteCredReq) {
-        groupsCredRepositoryToMany.updateIdCred(Long.parseLong(deleteCredReq.getCredid()));
-        credentialsRepository.deleteById(Long.parseLong(deleteCredReq.getCredid()));
+        groupsCredRepositoryToMany.updateIdCred(deleteCredReq.getCredid());
+        credSystemRepository.updateByCred_id(deleteCredReq.getCredid());
+        credentialsRepository.deleteById(deleteCredReq.getCredid());
         return ResponseEntity.ok(true);
     }
-
+    @PostMapping(value = "/cred/delete/byids")
+    public ResponseEntity RestControllerDeleteCred(@RequestBody DeleteCredByIdsReq deleteCredByIdsReq){
+        for(Long id : deleteCredByIdsReq.getCredids()){
+            groupsCredRepositoryToMany.updateIdCred(id);
+            credSystemRepository.updateByCred_id(id);
+        }
+        credentialsRepository.deleteAllById(deleteCredByIdsReq.getCredids());
+        return ResponseEntity.ok(true);
+    }
     @PostMapping(value = "/groups/cred/create")
     public ResponseEntity<Boolean> RestControllerCreate(@RequestBody CreateGroupsCredReq createGroupsCredReq){
         int counter = 0;
@@ -64,8 +83,6 @@ public class RestControllerCred {
             credGroup.setId_cred(el.getId());
             groupsCredRepositoryToMany.save(credGroup);
         }
-
-
         return ResponseEntity.ok(true);
     }
 
@@ -80,9 +97,20 @@ public class RestControllerCred {
     }
 
     @PostMapping(value = "/markbook/cred/get")
-    public ResponseEntity<Iterable<Credentials>> RestControllerGetMarkbook(@RequestBody UserIdReq userIdReq){
+    public ResponseEntity<Iterable<CredentialsReq>> RestControllerGetMarkbook(@RequestBody UserIdReq userIdReq){
         Iterable<Credentials> credentials = credentialsRepository.findByUserIdAndMarkbook(Long.valueOf(userIdReq.getUserid()));
-        return ResponseEntity.ok(credentials);
+        List<CredentialsReq> credentialsReqs = new ArrayList<>();
+        for(Credentials cred : credentials){
+            credentialsReqs.add(new CredentialsReq(
+                    cred.getId(),
+                    cred.getUsername(),
+                    systemRepository.findAllById(credSystemRepository.findByCredId(cred.getId())),
+                    cred.getLogin(),
+                    cred.getPassword(),
+                    Long.toString(cred.getUserId())
+            ));
+        }
+        return ResponseEntity.ok(credentialsReqs);
     }
     @PostMapping(value = "/groups/cred/get")
     public ResponseEntity<Iterable<GroupsCred>> RestControllerGetGroups(@RequestBody UserIdReq req){
@@ -119,9 +147,20 @@ public class RestControllerCred {
         return ResponseEntity.ok(true);
     }
     @PostMapping(value = "/cred/by/group")
-    public ResponseEntity<Iterable<Credentials>> RestControllerGetCredByGroup(@RequestBody GroupIdReq req){
+    public ResponseEntity<Iterable<CredentialsReq>> RestControllerGetCredByGroup(@RequestBody GroupIdReq req){
         List<Long> credentialsIds = groupsCredRepositoryToMany.findIdCredByIdgroup(Long.valueOf(req.getGroupid()));
         Iterable<Credentials> credentials = credentialsRepository.findAllById(credentialsIds);
-        return ResponseEntity.ok(credentials);
+        List<CredentialsReq> credentialsReqs = new ArrayList<>();
+        for(Credentials cred : credentials){
+            credentialsReqs.add(new CredentialsReq(
+                    cred.getId(),
+                    cred.getUsername(),
+                    systemRepository.findAllById(credSystemRepository.findByCredId(cred.getId())),
+                    cred.getLogin(),
+                    cred.getPassword(),
+                    Long.toString(cred.getUserId())
+            ));
+        }
+        return ResponseEntity.ok(credentialsReqs);
     }
 }

@@ -3,8 +3,6 @@ package org.bandana.resthardslightdemo.request;
 import lombok.Data;
 
 @Data
-public class DeleteCredReq {
-    private Long credid;
-
-
+public class DeleteCredByIdsReq {
+    Iterable<Long> credids;
 }
