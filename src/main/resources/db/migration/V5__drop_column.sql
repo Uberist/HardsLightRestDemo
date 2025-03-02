@@ -1,0 +1,1 @@
+alter table hards.credentials drop column c_username;

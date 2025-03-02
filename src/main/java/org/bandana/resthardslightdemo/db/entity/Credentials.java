@@ -17,23 +17,18 @@ public class Credentials {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @Column(name = "user_id")
-    private Long userId;
-    @Column(name = "c_username")
-    private String username;
-    @Column(name = "c_login")
+    @Column(name = "login")
     private String login;
-    @Column(name = "c_password")
+    @Column(name = "password")
     private String password;
-    @Column(name = "group_id")
-    private Long groupId;
+    @Column(name = "sender")
+    private Long sender;
     @Column(name = "markbook")
     private Boolean markbook;
 
-    public Credentials(Long userId, String username, String login, String password) {
-        this.userId = userId;
-        this.username = username;
+    public Credentials(String login, String password, Long sender) {
         this.login = login;
         this.password = password;
+        this.sender = sender;
     }
 }

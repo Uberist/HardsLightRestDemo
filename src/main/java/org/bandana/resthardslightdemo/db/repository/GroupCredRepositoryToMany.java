@@ -12,10 +12,11 @@ import java.util.List;
 
 @Repository
 public interface GroupCredRepositoryToMany extends JpaRepository<CredGroup, Long> {
-    @Query(value = "select distinct id_group from hards.cred_group " +
+    @Query(value = "select hards.cred_group.id_group from hards.cred_group " +
             "join hards.credentials on hards.cred_group.id_cred = hards.credentials.id " +
             "join hards.credentials_group on hards.cred_group.id_group = hards.credentials_group.id " +
-            "where hards.credentials.user_id = :id_user; ",
+            "join hards.credentials_user on hards.credentials.id = hards.credentials_user.cred_id " +
+            "where hards.credentials_user.user_id = :id_user;",
             nativeQuery = true)
     public List<Long> findIdsGroupById_user(@Param("id_user") Long id_user);
     @Query(value = "select hards.cred_group.id from hards.cred_group " +

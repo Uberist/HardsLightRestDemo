@@ -1,13 +1,18 @@
 spring:
   datasource:
-    url: jdbc:postgresql://bandanaclawa.ru:5432/hardslight
-    username: postgres
-    password: hunove12
+    url: jdbc:postgresql://psql.snznet.com:5400/bnd
+    username: bandana
+    password: 6HDPf6MXK4pHyq8
   security:
     oauth2:
       resourceserver:
         jwt:
           public-key-location: classpath:key.pem
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    schemas: hards
 debug: true
 server:
   ssl:

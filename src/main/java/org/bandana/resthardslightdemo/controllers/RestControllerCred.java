@@ -1,7 +1,9 @@
 package org.bandana.resthardslightdemo.controllers;
 
 import jakarta.transaction.Transactional;
+import org.apache.catalina.User;
 import org.bandana.resthardslightdemo.db.entity.CredGroup;
+import org.bandana.resthardslightdemo.db.entity.Users;
 import org.bandana.resthardslightdemo.db.repository.*;
 import org.bandana.resthardslightdemo.db.repository.GroupCredRepositoryToMany;
 import org.bandana.resthardslightdemo.request.*;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,19 +35,26 @@ public class RestControllerCred {
     @Autowired
     private CredSystemRepository credSystemRepository;
     @Autowired
+    private CredentialsUserRepository credentialsUserRepository;
+    @Autowired
     SystemRepository systemRepository;
+    @PostMapping(value = "/users/get")
+    public ResponseEntity<Iterable<Users>> getUser() {
+        return ResponseEntity.ok(usersRepository.findAll());
+    }
     @PostMapping(value = "/getcred")
     public ResponseEntity<Iterable<CredentialsReq>> RestControllerTest(@RequestBody UserIdReq req) {
-        Iterable<Credentials> credentials = credentialsRepository.findByUserId(Long.valueOf(req.getUserid()));
+        Iterable<Long> credids = credentialsUserRepository.findCredIdByUserId(Long.valueOf(req.getUserid()));
+        Iterable<Credentials> credentials = credentialsRepository.findAllById(credids);
         List<CredentialsReq> creds = new ArrayList<>();
         for(Credentials cred : credentials)
             creds.add(new CredentialsReq(
                     cred.getId(),
-                    cred.getUsername(),
                     systemRepository.findAllById(credSystemRepository.findByCredId(cred.getId())),
+                    usersRepository.findAllById(credentialsUserRepository.findUserIdByCredId(cred.getId())),
                     cred.getLogin(),
                     cred.getPassword(),
-                    String.valueOf(cred.getId())));
+                    usersRepository.findById(cred.getSender()).get()));
         return ResponseEntity.ok(creds);
     }
 
@@ -52,6 +62,7 @@ public class RestControllerCred {
     public ResponseEntity<Boolean> RestControllerDelete(@RequestBody DeleteCredReq deleteCredReq) {
         groupsCredRepositoryToMany.updateIdCred(deleteCredReq.getCredid());
         credSystemRepository.updateByCred_id(deleteCredReq.getCredid());
+        credentialsUserRepository.updateCredByCredId(deleteCredReq.getCredid());
         credentialsRepository.deleteById(deleteCredReq.getCredid());
         return ResponseEntity.ok(true);
     }
@@ -60,6 +71,7 @@ public class RestControllerCred {
         for(Long id : deleteCredByIdsReq.getCredids()){
             groupsCredRepositoryToMany.updateIdCred(id);
             credSystemRepository.updateByCred_id(id);
+            credentialsUserRepository.updateCredByCredId(id);
         }
         credentialsRepository.deleteAllById(deleteCredByIdsReq.getCredids());
         return ResponseEntity.ok(true);
@@ -98,16 +110,16 @@ public class RestControllerCred {
 
     @PostMapping(value = "/markbook/cred/get")
     public ResponseEntity<Iterable<CredentialsReq>> RestControllerGetMarkbook(@RequestBody UserIdReq userIdReq){
-        Iterable<Credentials> credentials = credentialsRepository.findByUserIdAndMarkbook(Long.valueOf(userIdReq.getUserid()));
+        Iterable<Credentials> credentials = credentialsRepository.findAllById(credentialsUserRepository.findCredIdByUserId(Long.valueOf(userIdReq.getUserid())));
         List<CredentialsReq> credentialsReqs = new ArrayList<>();
         for(Credentials cred : credentials){
             credentialsReqs.add(new CredentialsReq(
                     cred.getId(),
-                    cred.getUsername(),
                     systemRepository.findAllById(credSystemRepository.findByCredId(cred.getId())),
+                    usersRepository.findAllById(credentialsUserRepository.findUserIdByCredId(cred.getId())),
                     cred.getLogin(),
                     cred.getPassword(),
-                    Long.toString(cred.getUserId())
+                    usersRepository.findById(cred.getSender()).get()
             ));
         }
         return ResponseEntity.ok(credentialsReqs);
@@ -121,10 +133,6 @@ public class RestControllerCred {
     }
     @PostMapping(value = "/groups/cred/delete")
     public ResponseEntity<Boolean> RestControllerGroupCredDelete(@RequestBody DeleteGroupCredReq deleteGroupCredReq){
-        Iterable<Credentials> groups = credentialsRepository.findByGroupId(deleteGroupCredReq.getId());
-        for(Credentials cred : groups){
-            cred.setGroupId(null);
-        }
         List<Long> CredGroupIds = groupsCredRepositoryToMany.findIdsGroup_CredById_Cred(deleteGroupCredReq.getId());
         for(Long credGroupId : CredGroupIds){
             groupsCredRepositoryToMany.updateIdGroup(credGroupId);
@@ -154,11 +162,11 @@ public class RestControllerCred {
         for(Credentials cred : credentials){
             credentialsReqs.add(new CredentialsReq(
                     cred.getId(),
-                    cred.getUsername(),
                     systemRepository.findAllById(credSystemRepository.findByCredId(cred.getId())),
+                    new ArrayList<Users>(),
                     cred.getLogin(),
                     cred.getPassword(),
-                    Long.toString(cred.getUserId())
+                    usersRepository.findById(cred.getSender()).get()
             ));
         }
         return ResponseEntity.ok(credentialsReqs);
