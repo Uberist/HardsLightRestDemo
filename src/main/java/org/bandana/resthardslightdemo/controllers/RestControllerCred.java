@@ -44,8 +44,7 @@ public class RestControllerCred {
     }
     @PostMapping(value = "/getcred")
     public ResponseEntity<Iterable<CredentialsReq>> RestControllerTest(@RequestBody UserIdReq req) {
-        Iterable<Long> credids = credentialsUserRepository.findCredIdByUserId(Long.valueOf(req.getUserid()));
-        Iterable<Credentials> credentials = credentialsRepository.findAllById(credids);
+        Iterable<Credentials> credentials = credentialsRepository.findAllCredByUserId(Long.valueOf(req.getUserid()));
         List<CredentialsReq> creds = new ArrayList<>();
         for(Credentials cred : credentials)
             creds.add(new CredentialsReq(
@@ -54,10 +53,31 @@ public class RestControllerCred {
                     usersRepository.findAllById(credentialsUserRepository.findUserIdByCredId(cred.getId())),
                     cred.getLogin(),
                     cred.getPassword(),
+                    cred.getBegindateaccess().toString(),
+                    cred.getEnddateaccess().toString(),
+                    cred.getTimesend().toString(),
                     usersRepository.findById(cred.getSender()).get()));
         return ResponseEntity.ok(creds);
     }
-
+    @PostMapping(value = "/cred/newcred/get")
+    public ResponseEntity<Iterable<CredentialsReq>> RestControllerGetNewCred(@RequestBody UserIdReq req) {
+        Iterable<Credentials> credentials = credentialsRepository.findNewCredentialsByUserId(Long.valueOf(req.getUserid()));
+        List<CredentialsReq> creds = new ArrayList<>();
+        for(Credentials cred : credentials)
+            creds.add(new CredentialsReq(
+                    cred.getId(),
+                    systemRepository.findAllById(credSystemRepository.findByCredId(cred.getId())),
+                    usersRepository.findAllById(credentialsUserRepository.findUserIdByCredId(cred.getId())),
+                    cred.getLogin(),
+                    cred.getPassword(),
+                    cred.getBegindateaccess().toString(),
+                    cred.getEnddateaccess().toString(),
+                    cred.getTimesend().toString(),
+                    usersRepository.findById(cred.getSender()).get(),
+                    cred.getAccept(),
+                    cred.getReject()));
+        return ResponseEntity.ok(creds);
+    }
     @PostMapping(value = "/deletecred")
     public ResponseEntity<Boolean> RestControllerDelete(@RequestBody DeleteCredReq deleteCredReq) {
         groupsCredRepositoryToMany.updateIdCred(deleteCredReq.getCredid());
@@ -110,7 +130,7 @@ public class RestControllerCred {
 
     @PostMapping(value = "/markbook/cred/get")
     public ResponseEntity<Iterable<CredentialsReq>> RestControllerGetMarkbook(@RequestBody UserIdReq userIdReq){
-        Iterable<Credentials> credentials = credentialsRepository.findAllById(credentialsUserRepository.findCredIdByUserId(Long.valueOf(userIdReq.getUserid())));
+        Iterable<Credentials> credentials = credentialsRepository.findByUserIdAndMarkbook(Long.valueOf(userIdReq.getUserid()));
         List<CredentialsReq> credentialsReqs = new ArrayList<>();
         for(Credentials cred : credentials){
             credentialsReqs.add(new CredentialsReq(
@@ -119,6 +139,9 @@ public class RestControllerCred {
                     usersRepository.findAllById(credentialsUserRepository.findUserIdByCredId(cred.getId())),
                     cred.getLogin(),
                     cred.getPassword(),
+                    cred.getBegindateaccess().toString(),
+                    cred.getEnddateaccess().toString(),
+                    cred.getTimesend().toString(),
                     usersRepository.findById(cred.getSender()).get()
             ));
         }
@@ -166,9 +189,22 @@ public class RestControllerCred {
                     new ArrayList<Users>(),
                     cred.getLogin(),
                     cred.getPassword(),
+                    cred.getBegindateaccess().toString(),
+                    cred.getEnddateaccess().toString(),
+                    cred.getTimesend().toString(),
                     usersRepository.findById(cred.getSender()).get()
             ));
         }
         return ResponseEntity.ok(credentialsReqs);
+    }
+    @PostMapping(value = "/cred/accept")
+    public ResponseEntity<Boolean> RestControllerAccept(@RequestBody DeleteCredReq credId){
+        credentialsRepository.accept(credId.getCredid());
+        return ResponseEntity.ok(true);
+    }
+    @PostMapping(value = "/cred/reject")
+    public ResponseEntity<Boolean> RestControllerReject(@RequestBody DeleteCredReq credId){
+        credentialsRepository.reject(credId.getCredid());
+        return ResponseEntity.ok(true);
     }
 }
