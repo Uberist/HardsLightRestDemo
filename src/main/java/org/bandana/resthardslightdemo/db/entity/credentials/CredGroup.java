@@ -1,11 +1,9 @@
-package org.bandana.resthardslightdemo.db.entity;
+package org.bandana.resthardslightdemo.db.entity.credentials;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DialectOverride;
 
 @Data
 @NoArgsConstructor

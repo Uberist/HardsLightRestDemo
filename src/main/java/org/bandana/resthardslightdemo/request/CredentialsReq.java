@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.bandana.resthardslightdemo.db.entity.System;
+import org.bandana.resthardslightdemo.db.entity.credentials.System;
 import org.bandana.resthardslightdemo.db.entity.Users;
-
-import java.sql.Timestamp;
 
 @Data
 public class CredentialsReq {

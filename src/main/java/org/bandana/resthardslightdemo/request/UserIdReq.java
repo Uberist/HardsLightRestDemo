@@ -6,4 +6,7 @@ import lombok.Data;
 public class UserIdReq {
     public int userid;
 
+    public UserIdReq(int userid) {
+        this.userid = userid;
+    }
 }

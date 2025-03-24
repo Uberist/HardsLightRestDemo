@@ -1,6 +1,6 @@
 package org.bandana.resthardslightdemo.db.repository;
 
-import org.bandana.resthardslightdemo.db.entity.CredSystem;
+import org.bandana.resthardslightdemo.db.entity.credentials.CredSystem;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

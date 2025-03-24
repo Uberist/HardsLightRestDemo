@@ -1,6 +1,6 @@
 package org.bandana.resthardslightdemo.controllers;
 
-import org.bandana.resthardslightdemo.db.entity.System;
+import org.bandana.resthardslightdemo.db.entity.credentials.System;
 import org.bandana.resthardslightdemo.db.repository.CredentialsRepository;
 import org.bandana.resthardslightdemo.db.repository.SystemRepository;
 import org.bandana.resthardslightdemo.request.UserIdReq;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+
 @CrossOrigin(origins = "https://bandanaclawa.ru:5173")
 @Controller
 public class RestControllerSystem {

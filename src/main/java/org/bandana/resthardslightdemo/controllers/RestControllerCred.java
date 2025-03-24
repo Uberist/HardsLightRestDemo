@@ -1,21 +1,19 @@
 package org.bandana.resthardslightdemo.controllers;
 
 import jakarta.transaction.Transactional;
-import org.apache.catalina.User;
-import org.bandana.resthardslightdemo.db.entity.CredGroup;
+import org.bandana.resthardslightdemo.db.entity.credentials.CredGroup;
 import org.bandana.resthardslightdemo.db.entity.Users;
 import org.bandana.resthardslightdemo.db.repository.*;
 import org.bandana.resthardslightdemo.db.repository.GroupCredRepositoryToMany;
 import org.bandana.resthardslightdemo.request.*;
-import org.bandana.resthardslightdemo.db.entity.Credentials;
-import org.bandana.resthardslightdemo.db.entity.GroupsCred;
+import org.bandana.resthardslightdemo.db.entity.credentials.Credentials;
+import org.bandana.resthardslightdemo.db.entity.credentials.GroupsCred;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -198,13 +196,13 @@ public class RestControllerCred {
         return ResponseEntity.ok(credentialsReqs);
     }
     @PostMapping(value = "/cred/accept")
-    public ResponseEntity<Boolean> RestControllerAccept(@RequestBody DeleteCredReq credId){
-        credentialsRepository.accept(credId.getCredid());
+    public ResponseEntity<Boolean> RestControllerAccept(@RequestBody AcceptAndRejectReq req){
+        credentialsRepository.accept(req.getCredid(), req.getUserid());
         return ResponseEntity.ok(true);
     }
     @PostMapping(value = "/cred/reject")
-    public ResponseEntity<Boolean> RestControllerReject(@RequestBody DeleteCredReq credId){
-        credentialsRepository.reject(credId.getCredid());
+    public ResponseEntity<Boolean> RestControllerReject(@RequestBody AcceptAndRejectReq req){
+        credentialsRepository.reject(req.getCredid(), req.getUserid());
         return ResponseEntity.ok(true);
     }
 }

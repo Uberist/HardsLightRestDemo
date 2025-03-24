@@ -1,4 +1,4 @@
-package org.bandana.resthardslightdemo.db.entity;
+package org.bandana.resthardslightdemo.db.entity.credentials;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;

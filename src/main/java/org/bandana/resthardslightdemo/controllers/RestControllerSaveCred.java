@@ -1,21 +1,20 @@
 package org.bandana.resthardslightdemo.controllers;
 
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bandana.resthardslightdemo.db.entity.*;
-import org.bandana.resthardslightdemo.db.entity.System;
+import org.bandana.resthardslightdemo.db.entity.credentials.System;
+import org.bandana.resthardslightdemo.db.entity.credentials.CredSystem;
+import org.bandana.resthardslightdemo.db.entity.credentials.CredUser;
+import org.bandana.resthardslightdemo.db.entity.credentials.Credentials;
 import org.bandana.resthardslightdemo.db.repository.*;
 import org.bandana.resthardslightdemo.request.CredentialsReq;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.sql.Timestamp;
 @Log4j2
